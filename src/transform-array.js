@@ -13,58 +13,53 @@ const { NotImplementedError } = require('../extensions/index.js');
  * transform([1, 2, 3, '--discard-prev', 4, 5]) => [1, 2, 4, 5]
  * 
  */
-function transform(/* arr */) {
-	if (Array.isArray(arr)) {
-        let copy = arr.slice();
-        let correction = 0;
-        let deleted = [];
-        arr.forEach((el, i) => {
-            switch (el) {
-                case '--discard-next':
-                    if (i !== arr.length - 1) {
-                        copy.splice(i + correction, 2);
-                        deleted.push(i + 1);
-                        correction -= 2;
-
-                    } else {
-                        copy.splice(i + correction, 1);
-                        correction -= 1;
-                    }
-                    break;
-                case '--discard-prev':
-                    if (i !== 0 && !deleted.includes(i - 1)) {
-                        copy.splice(i - 1 + correction, 2);
-                        correction -= 2;
-                    } else {
-                        copy.splice(i + correction, 1);
-                        correction -= 1;
-                    }
-                    break;
-                case '--double-next':
-                    if (i !== arr.length - 1) {
-                        copy.splice(i + correction, 1, arr[i + 1]);
-                    } else {
-                        copy.splice(i + correction, 1);
-                        correction -= 1;
-                    }
-                    break;
-                case '--double-prev':
-                    if (i !== 0 && !deleted.includes(i - 1)) {
-                        copy.splice(i + correction, 1, arr[i - 1]);
-                    } else {
-                        copy.splice(i + correction, 1);
-                        correction -= 1;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        });
-        return copy;
-    } else {
-        throw new Error('\'arr\' parameter must be an instance of the Array!');
-    }
-}
+ function transform(arr) {
+	if (!Array.isArray(arr)) {
+	  throw new Error(`'arr' parameter must be an instance of the Array!`)
+	}
+	const out = []
+	let isDel = false
+  
+	for (let i = 0; i < arr.length; i++) {
+	  if (typeof arr[i] === 'string') {
+		switch (arr[i]) {
+		  case '--discard-next':
+			isDel = true
+			i++
+			break
+		  case '--discard-prev':
+			if (!isDel) {
+			  try {
+				out.pop()
+			  } catch {}
+			} else {
+			  isDel = false
+			}
+			break
+		  case '--double-next':
+			if (arr[i + 1]) {
+			  out.push(arr[i + 1])
+			}
+			break
+		  case '--double-prev':
+			if (!isDel) {
+			  if (arr[i - 1]) {
+				out.push(arr[i - 1])
+			  }
+			} else {
+			  isDel = false
+			}
+			break
+		  default:
+			out.push(arr[i])
+			break
+		}
+	  } else {
+		out.push(arr[i])
+	  }
+	}
+	return out
+  }
 
 module.exports = {
   transform
