@@ -19,7 +19,7 @@ function getCommonCharacterCount(s1, s2) {
 	str1.forEach(char => {
 		if (str2.includes(char)) {
 			count++;
-			str2.splice(s2.indexOf(char), 1)
+			str2.splice(str2.indexOf(char), 1)
 		}
 	});
 
