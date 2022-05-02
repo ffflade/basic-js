@@ -6,43 +6,30 @@ const { NotImplementedError } = require('../extensions/index.js');
  */
 const chainMaker = {
 	chain: [],
-
-	addLink(n) {
-		if (n == null || n == undefined) {
-			this.chain.push(`()`);
-			return (this);
-		} else {
-			this.chain.push(`(${n})`);
-			return (this);
-		}
-	},
 	getLength() {
-		let len =  0;
-		for (let i = 0; i < this.chain.length; i++) {
-			if (Number.isInteger(+(this.chain[i])) && this.chain[i] !== ' ') {
-				len += 1;
-			}
-		};
-
-		return (len)
+		return this.chain.length;
 	},
-	removeLink(num) {
-		if (num !== Math.trunc(num) || num <= 0 || num > this.chain.length || !Number.isInteger(num)) {
-			throw new Error('ERROR: NEEDED NUMBER')
+	addLink(value) {
+		this.chain.push(`( ${String(value)} )`);
+		return this;
+	},
+	removeLink(position) {
+		if (typeof position === 'number' && position > 0 && position < this.chain.length) {
+			this.chain.splice(position - 1, 1);
+			return this;
+		} else {
+			this.chain = [];
 		}
-		this.chain.splice(num - 1, 1);
-		return (this);
 	},
 	reverseChain() {
-		this.chain = this.chain.reverse();
-		return (this);
+		this.chain.reverse();
+		return this;
 	},
 	finishChain() {
-		let res = this.chain;
-		this.chain.length = 0;
-
-		return (res.join(' ~~ '));
-	},
+		let resultChain = this.chain.join('~~');
+		this.chain = [];
+		return resultChain;
+	}
 };
 
 module.exports = {
