@@ -14,8 +14,56 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 function transform(/* arr */) {
-  throw new NotImplementedError('Not implemented');
-  // remove line with error and write your code here
+	if (Array.isArray(arr)) {
+        let copy = arr.slice();
+        let correction = 0;
+        let deleted = [];
+        arr.forEach((el, i) => {
+            switch (el) {
+                case '--discard-next':
+                    if (i !== arr.length - 1) {
+                        copy.splice(i + correction, 2);
+                        deleted.push(i + 1);
+                        correction -= 2;
+
+                    } else {
+                        copy.splice(i + correction, 1);
+                        correction -= 1;
+                    }
+                    break;
+                case '--discard-prev':
+                    if (i !== 0 && !deleted.includes(i - 1)) {
+                        copy.splice(i - 1 + correction, 2);
+                        correction -= 2;
+                    } else {
+                        copy.splice(i + correction, 1);
+                        correction -= 1;
+                    }
+                    break;
+                case '--double-next':
+                    if (i !== arr.length - 1) {
+                        copy.splice(i + correction, 1, arr[i + 1]);
+                    } else {
+                        copy.splice(i + correction, 1);
+                        correction -= 1;
+                    }
+                    break;
+                case '--double-prev':
+                    if (i !== 0 && !deleted.includes(i - 1)) {
+                        copy.splice(i + correction, 1, arr[i - 1]);
+                    } else {
+                        copy.splice(i + correction, 1);
+                        correction -= 1;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+        return copy;
+    } else {
+        throw new Error('\'arr\' parameter must be an instance of the Array!');
+    }
 }
 
 module.exports = {
